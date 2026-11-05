@@ -1,0 +1,60 @@
+name: Watch for homes
+
+# Hver vagt kører en time og bestiller selv den næste, når den er færdig.
+# Den planlagte start hver time er et sikkerhedsnet, hvis kæden er brudt.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      minutter:
+        description: "Minutes per run. Leave it at 60 – each run starts the next one by itself, so it never stops."
+        default: "60"
+
+concurrency:
+  group: boligvagt
+  cancel-in-progress: false
+
+permissions:
+  contents: write  # gemme hvilke boliger der er set (grenen "tilstand")
+  actions: write   # bestille næste vagt
+
+jobs:
+  vagt:
+    # Skabelonen (Simons private repo) kører kun, når nogen trykker på knappen –
+    # døgnkørsel ville bruge dens gratis minutter. Kopier kører hele tiden.
+    if: github.repository != 'simon-jensen/boligvagt' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install
+        run: |
+          python3 -m venv ~/venv
+          ~/venv/bin/pip install -q --only-binary=:all: -r requirements.txt
+
+      - name: Load memory
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q --depth=1 origin tilstand 2>/dev/null; then
+            git worktree add -q --detach .tilstand FETCH_HEAD
+          else
+            git worktree add -q --orphan -b tilstand .tilstand
+          fi
+
+      - name: Watch
+        run: ~/venv/bin/python -m boligvagt koer --minutter "${MINUTTER:-60}"
+        env:
+          MINUTTER: ${{ inputs.minutter }}  # via env, så teksten aldrig bliver til kode i scriptet
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+          PUSHOVER_HELPER: ${{ secrets.PUSHOVER_HELPER }}  # valgfri: den, der passer vagten
+          APPLICANT: ${{ secrets.APPLICANT }}
+
+      - name: Start the next run
+        if: github.repository != 'simon-jensen/boligvagt'
+        run: gh workflow run vagt.yml --ref "$GITHUB_REF_NAME"
+        env:
+          GH_TOKEN: ${{ github.token }}

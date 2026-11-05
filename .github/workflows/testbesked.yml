@@ -1,0 +1,26 @@
+name: Send test message
+
+# Click "Run workflow": checks the sites once and sends a test message.
+# (Tjekker siderne én gang og sender en testbesked.)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          python3 -m venv ~/venv
+          ~/venv/bin/pip install -q --only-binary=:all: -r requirements.txt
+      - name: Send test message
+        run: ~/venv/bin/python -m boligvagt test
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+          PUSHOVER_HELPER: ${{ secrets.PUSHOVER_HELPER }}  # valgfri: den, der passer vagten

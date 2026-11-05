@@ -1,0 +1,78 @@
+# Boligvagt – your search settings
+#
+# How to change them: click the pencil (✏️) at the top right, edit the values,
+# and click "Commit changes". Boligvagt uses the new settings within about
+# 10 minutes. If something is wrong, you get a message on your phone saying what,
+# and the previous settings are kept until it is fixed.
+#
+# Lines starting with # are explanations and are ignored.
+
+[search]
+# Postal codes to include. A range is written "1000-2500".
+# Default: all of Copenhagen and Frederiksberg municipalities (incl. Nordhavn).
+postal_codes = ["1000-2500", "2700", "2720"]
+#
+# Which postal code is which area (for reference):
+#   1000-1499  Copenhagen K (city centre)    2200  Copenhagen N (Nørrebro)
+#   1500-1799  Copenhagen V (Vesterbro)      2300  Copenhagen S (Amager, Ørestad)
+#   1800-2000  Frederiksberg                 2400  Copenhagen NV (Nordvest)
+#   2100       Copenhagen Ø (Østerbro)       2450  Copenhagen SV (Sydhavn)
+#   2150       Nordhavn                      2500  Valby
+#   2700       Brønshøj                      2720  Vanløse
+# Nearby, not included by default:
+#   2600 Glostrup, 2605 Brøndby, 2610 Rødovre, 2650 Hvidovre, 2730 Herlev,
+#   2770 Kastrup, 2791 Dragør, 2820 Gentofte, 2860 Søborg, 2900 Hellerup,
+#   2920 Charlottenlund.
+# Example – also include Hellerup and Rødovre:
+#   postal_codes = ["1000-2500", "2700", "2720", "2900", "2610"]
+
+# Highest total price per month in DKK: rent + utilities paid on account
+# ("aconto"). Write numbers without dots or "kr", e.g. 13000.
+max_monthly_price = 10000
+
+# Highest move-in price in DKK (deposit + prepaid rent). 0 = no limit.
+max_move_in_price = 0
+
+# Minimum number of rooms and minimum size in m². 0 = no limit.
+# In Denmark the living room counts: "2 rooms" = 1 bedroom + living room.
+min_rooms = 0
+min_size_m2 = 43
+
+# Property types. Possible: "apartment", "townhouse", "house", "room".
+# ("room" is a single room in a shared home.)
+property_types = ["apartment", "townhouse", "house"]
+
+# Minimum lease length in months. 0 = also include short-term leases.
+min_lease_months = 0
+
+[notifications]
+# Send an "I'm still running" message every Monday at 9:00.
+weekly_status = true
+
+# Priority. The first rule below that a home matches decides how your phone
+# reacts. Homes that match no rule give a normal notification with sound.
+#   alert = "ring"    rings every minute, even on silent, until you tap "Acknowledge Notification" in Pushover
+#   alert = "sound"   normal notification with sound
+#   alert = "silent"  notification without sound
+# A rule can use max_monthly_price, min_size_m2, min_rooms and max_move_in_price.
+# A rule only applies if the listing states the numbers the rule uses.
+# sound is optional: a Pushover sound, e.g. "siren", "bugle" or "cashregister".
+# Add more rules by copying a block that starts with [[priority]].
+
+[[priority]]
+name = "2+ ROOMS"
+min_rooms = 2
+alert = "sound"
+
+[auto_contact]
+# Contact the landlord automatically when a home matches your search.
+#   "off":  no contact.
+#   "test": the landlord's form is filled in and you get a picture of it on
+#           your phone, but nothing is sent.
+#   "send": the message is sent in your name.
+# Your details and message are in the GitHub secret APPLICANT (see SETUP.md).
+CEJ = "off"
+Kereby = "off"
+
+# At most this many automatic messages per 24 hours.
+max_per_day = 10

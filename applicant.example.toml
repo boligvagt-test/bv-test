@@ -1,0 +1,43 @@
+# Template for the GitHub secret APPLICANT (only used for automatic contact).
+# Copy everything, fill it in, and save it as the secret APPLICANT (see SETUP.md).
+# Lines starting with # are explanations.
+
+name = "First Last"
+email = "name@example.com"
+phone = "12345678"
+
+# Only CEJ asks for these. Their form is in Danish, so the values must be written
+# exactly as below (Danish). The English meaning is after the #.
+birthdate = "1995-01-31"       # year-month-day
+household = "Enkeltperson"     # Enkeltperson = single person
+                               # Par/kærester = couple
+                               # Familie = family
+                               # Gruppe/roomies = group / flatmates
+occupation = "I arbejde"       # I arbejde = employed
+                               # Studerende = student
+                               # Ledig = unemployed
+                               # Pensioneret = retired
+details = []                   # choose any of these, e.g. ["Har kæledyr"]:
+                               # "Har hjemmeboende børn" = children living at home
+                               # "Har kæledyr" = have pets
+                               # "Søger delebolig" = looking to share
+                               # "Søger parkering" = need parking
+
+# Your message to the landlord. {address} and {available_from} are filled in with
+# the home's details; {name}, {phone} and {email} with yours.
+# Everything in <...> must be replaced, otherwise nothing is sent.
+# Writing in English is normal in Copenhagen.
+message = """
+Hi,
+
+I would love to see the apartment at {address} and can move in {available_from}.
+
+My name is {name}, I am <age> and I work full time as a <job title>, earning <amount> DKK
+a month before tax. I can show payslips. I don't smoke and have no pets.
+
+I can come to a viewing at short notice.
+
+Best regards
+{name}
+Phone {phone}
+"""

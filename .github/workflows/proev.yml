@@ -1,0 +1,32 @@
+name: Try auto-contact
+
+# Fills in the contact form on one CEJ or Kereby home without sending it, and
+# sends a picture of the filled-in form to your phone.
+# (Udfylder formularen uden at sende og sender et billede til telefonen.)
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Link to a home on CEJ or Kereby"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  proev:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          python3 -m venv ~/venv
+          ~/venv/bin/pip install -q --only-binary=:all: -r requirements.txt -r requirements-henvendelse.txt
+      - name: Fill in the form
+        run: ~/venv/bin/python -m boligvagt proev "$URL"
+        env:
+          URL: ${{ inputs.url }}
+          APPLICANT: ${{ secrets.APPLICANT }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
